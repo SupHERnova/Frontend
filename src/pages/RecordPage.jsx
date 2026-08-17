@@ -15,7 +15,6 @@ function RecordListView() {
   const { customers, loading, error } = useCustomerList(query);
 
   function goToRecord(customerId) {
-    setSelectedId(customerId);
     navigate(`/record/${customerId}`);
   }
 
@@ -55,7 +54,9 @@ function RecordListView() {
               customer={customer}
               badgeLabel={customer.grade}
               selected={selectedId === customer.id}
-              onClick={() => goToRecord(customer.id)}
+              onClick={() =>
+                setSelectedId((prev) => (prev === customer.id ? null : customer.id))
+              }
             />
           ))}
       </div>
