@@ -1,82 +1,98 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
-import VoicePanel from "./VoicePanel";
+import VoiceModal from "./VoiceModal";
+import { createRecord } from "../../api/client";
+
+const MAX_LENGTH = 500;
 
 const GUIDE_TIPS = [
   "고객이 관심을 보인 상품",
-  "매장을 방문한 이유나 시점",
-  "서비스 응대 시 특이사항",
+  "구매를 망설인 이유와 다음 연락 시점",
+  "사이즈 컬러 관련 요청",
 ];
 
-function RecordEditor({ pastRecords, onSave }) {
-  const navigate = useNavigate();
+function RecordEditor({ customerId, onSaved }) {
   const [content, setContent] = useState("");
+  const [voiceOpen, setVoiceOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState(null);
   const [showSavedDialog, setShowSavedDialog] = useState(false);
 
   function handleTranscribed(text) {
-    setContent((prev) => (prev ? `${prev}\n${text}` : text));
+    setContent((prev) => (prev ? `${prev}\n${text}` : text).slice(0, MAX_LENGTH));
   }
 
-  function handleSave() {
-    onSave(content);
-    setShowSavedDialog(true);
+  async function handleSave() {
+    setSaving(true);
+    setSaveError(null);
+    try {
+      await createRecord(customerId, content);
+      setShowSavedDialog(true);
+    } catch (err) {
+      setSaveError(err.message);
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
     <div>
-      {!content && (
-        <div className="mb-3 rounded-2xl bg-accent-soft/25 p-4">
-          <p className="text-[13px] font-semibold text-ink">
-            기록하면 좋은 내용
-          </p>
-          <ul className="mt-2 flex flex-col gap-1">
-            {GUIDE_TIPS.map((tip) => (
-              <li key={tip} className="text-[12px] text-muted">
-                · {tip}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <div className="mb-3 rounded-2xl border border-accent-soft bg-accent-soft/25 p-4">
+        <p className="text-[13px] font-semibold text-ink">
+          <span className="mr-1 text-accent">+</span>
+          기록하면 좋은 내용
+        </p>
+        <ul className="mt-2 flex flex-col gap-1">
+          {GUIDE_TIPS.map((tip) => (
+            <li key={tip} className="text-[12px] text-muted">
+              · {tip}
+            </li>
+          ))}
+        </ul>
+      </div>
 
       <textarea
         value={content}
-        onChange={(event) => setContent(event.target.value)}
-        placeholder="내용을 입력해주세요"
+        onChange={(event) => setContent(event.target.value.slice(0, MAX_LENGTH))}
+        placeholder="내용을 입력해주세요."
         rows={8}
         className="
           w-full resize-none bg-transparent text-[13px] leading-relaxed
           text-ink placeholder:text-muted focus:outline-none
         "
       />
+      <p className="text-right text-[11px] text-muted">
+        {content.length} / {MAX_LENGTH}
+      </p>
 
-      {pastRecords.length > 0 && (
-        <div className="mt-6">
-          <p className="mb-2 text-[13px] font-medium text-muted">
-            이전 기록
-          </p>
-          <div className="flex flex-col gap-2">
-            {pastRecords.map((record) => (
-              <div
-                key={record.id}
-                className="rounded-2xl border border-line px-4 py-3"
-              >
-                <p className="text-[12px] text-muted">{record.date}</p>
-                <p className="mt-1 text-[13px] text-ink/90">
-                  {record.summary}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
+      {saveError && (
+        <p className="mt-2 text-[12px] text-red-500">{saveError}</p>
       )}
 
-      <VoicePanel
-        hasContent={Boolean(content.trim())}
-        onTranscribed={handleTranscribed}
-        onSave={handleSave}
-      />
+      <div className="mt-6 flex gap-2">
+        <button
+          type="button"
+          onClick={() => setVoiceOpen(true)}
+          className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-ink py-3 text-[13px] font-medium text-ink"
+        >
+          <span className="text-[10px]">●</span> 음성 입력
+        </button>
+        <button
+          type="button"
+          onClick={handleSave}
+          disabled={!content.trim() || saving}
+          className="flex-1 rounded-full bg-ink py-3 text-[13px] font-semibold text-white disabled:opacity-40"
+        >
+          {saving ? "저장 중..." : "AI로 정리하고 저장"}
+        </button>
+      </div>
+
+      {voiceOpen && (
+        <VoiceModal
+          onClose={() => setVoiceOpen(false)}
+          onTranscribed={handleTranscribed}
+        />
+      )}
 
       {showSavedDialog && (
         <div className="absolute inset-0 z-[70] flex items-center justify-center bg-black/40">
@@ -86,7 +102,7 @@ function RecordEditor({ pastRecords, onSave }) {
             </p>
             <button
               type="button"
-              onClick={() => navigate("/record")}
+              onClick={onSaved}
               className="mt-4 w-full rounded-full bg-ink py-2.5 text-[13px] font-semibold text-white"
             >
               확인

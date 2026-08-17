@@ -8,7 +8,7 @@ function App() {
   return (
     <BrowserRouter>
       {/* 393x852 고정 프레임 안에서만 스크롤되는 콘텐츠 영역 */}
-      <div className="h-full w-full overflow-y-auto">
+      <div className="no-scrollbar h-full w-full overflow-y-auto">
         <Routes>
           {/* 추천 페이지: 목록 / 상세(고객 선택 후) */}
           <Route path="/" element={<Navigate to="/recommend" replace />} />
