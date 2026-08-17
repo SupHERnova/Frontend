@@ -52,7 +52,7 @@ export default function BriefingPage() {
             key={customer.id}
             customer={customer}
             badgeLabel={BADGE_LABEL[customer.recommendationType]}
-            onClick={() => navigate(`/customers/${customer.id}`)}
+            onClick={() => navigate(`/customers/${customer.id}/briefing`)}
           />
         ))}
       </section>
