@@ -122,7 +122,13 @@ export default function CustomerBriefingPage() {
         </h2>
         <p className="text-[12px] text-gray-500">구매 이력·취향·미해결 요청과 재고를 분석했습니다.</p>
       </div>
-      <button className="mt-7 w-full h-[50px] bg-black text-white rounded-[15px]">브리핑 열기</button>
+      <button
+        type="button"
+        className="mt-7 w-full h-[50px] bg-black text-white rounded-[15px]"
+        onClick={() => navigate(`/customers/${customerId}/briefing`)}
+      >
+        브리핑 열기
+      </button>
     </div>
   );
 }

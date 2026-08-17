@@ -17,7 +17,7 @@ function BottomNav() {
     },
     {
       label: "브리핑",
-      path: "/messages",
+      path: "/briefing",
       icon: briefingIcon,
     },
     {

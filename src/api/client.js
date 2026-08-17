@@ -29,6 +29,10 @@ export function fetchCustomerDetail(customerId) {
   return request(`/customers/${customerId}`);
 }
 
+export function fetchCustomerBriefings(customerId) {
+  return request(`/customers/${customerId}/briefings`);
+}
+
 export function fetchRecommendation(customerId) {
   return request(`/customers/${customerId}/recommendations`);
 }
