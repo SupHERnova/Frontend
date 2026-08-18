@@ -6,14 +6,36 @@ function formatTime(sec) {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
+// Speech Synthesis에서 15초 skip에 해당하는 대략적인 글자 수
+const CHARS_PER_SECOND = 5;
+
 function AudioBottomSheet({ audioUrl, scriptText, customerName, duration, onClose }) {
   const audioRef = useRef(null);
   const utteranceRef = useRef(null);
+  const charIndexRef = useRef(0);
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [totalDuration, setTotalDuration] = useState(duration ?? 0);
 
   const hasTtsFile = Boolean(audioUrl);
+
+  function speakFrom(text, baseCharIndex = 0) {
+    if (!text) { setPlaying(false); return; }
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "ko-KR";
+    utterance.rate = 0.9;
+    utterance.onboundary = (e) => { charIndexRef.current = baseCharIndex + e.charIndex; };
+    utterance.onend = () => setPlaying(false);
+    utterance.onerror = () => setPlaying(false);
+    utteranceRef.current = utterance;
+
+    window.speechSynthesis.cancel();
+    setTimeout(() => {
+      window.speechSynthesis.speak(utterance);
+      setPlaying(true);
+    }, 100);
+  }
 
   useEffect(() => {
     if (hasTtsFile) {
@@ -24,25 +46,10 @@ function AudioBottomSheet({ audioUrl, scriptText, customerName, duration, onClos
     }
 
     if (!scriptText) return;
+    charIndexRef.current = 0;
+    speakFrom(scriptText, 0);
 
-    const utterance = new SpeechSynthesisUtterance(scriptText);
-    utterance.lang = "ko-KR";
-    utterance.rate = 0.9;
-    utterance.onend = () => setPlaying(false);
-    utterance.onerror = () => setPlaying(false);
-    utteranceRef.current = utterance;
-
-    // Chrome 버그: cancel() 직후 speak()하면 무시되므로 100ms 지연
-    window.speechSynthesis.cancel();
-    const timer = setTimeout(() => {
-      window.speechSynthesis.speak(utterance);
-      setPlaying(true);
-    }, 100);
-
-    return () => {
-      clearTimeout(timer);
-      window.speechSynthesis.cancel();
-    };
+    return () => { window.speechSynthesis.cancel(); };
   }, []);
 
   function handleToggle() {
@@ -66,9 +73,14 @@ function AudioBottomSheet({ audioUrl, scriptText, customerName, duration, onClos
   }
 
   function handleSkip(seconds) {
-    if (!hasTtsFile) return;
-    const audio = audioRef.current;
-    audio.currentTime = Math.max(0, Math.min(audio.currentTime + seconds, audio.duration || 0));
+    if (hasTtsFile) {
+      const audio = audioRef.current;
+      audio.currentTime = Math.max(0, Math.min(audio.currentTime + seconds, audio.duration || 0));
+    } else {
+      const charOffset = Math.round(seconds * CHARS_PER_SECOND);
+      const newChar = Math.max(0, Math.min(charIndexRef.current + charOffset, (scriptText?.length ?? 1) - 1));
+      speakFrom(scriptText.slice(newChar), newChar);
+    }
   }
 
   return (
@@ -103,8 +115,7 @@ function AudioBottomSheet({ audioUrl, scriptText, customerName, duration, onClos
           <button
             type="button"
             onClick={() => handleSkip(-15)}
-            disabled={!hasTtsFile}
-            className="flex h-16 w-16 items-center justify-center rounded-full border border-white/60 text-[15px] font-semibold text-white disabled:opacity-30"
+            className="flex h-16 w-16 items-center justify-center rounded-full border border-white/60 text-[15px] font-semibold text-white"
           >
             -15
           </button>
@@ -127,8 +138,7 @@ function AudioBottomSheet({ audioUrl, scriptText, customerName, duration, onClos
           <button
             type="button"
             onClick={() => handleSkip(15)}
-            disabled={!hasTtsFile}
-            className="flex h-16 w-16 items-center justify-center rounded-full border border-white/60 text-[15px] font-semibold text-white disabled:opacity-30"
+            className="flex h-16 w-16 items-center justify-center rounded-full border border-white/60 text-[15px] font-semibold text-white"
           >
             +15
           </button>
