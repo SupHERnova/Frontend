@@ -213,17 +213,6 @@ export default function BriefingDetailPage() {
         </div>
       </section>
 
-      {/* 브리핑 목록 */}
-      {briefings.length > 0 && (
-        <section className="mt-6">
-          <p className="mb-3 text-[20px] font-bold text-ink">브리핑 기록</p>
-          <ul className="flex flex-col gap-3">
-            {briefings.map((b) => (
-              <BriefingItem key={b.briefingId} briefing={b} onPlay={setActiveBriefing} />
-            ))}
-          </ul>
-        </section>
-      )}
 
       {/* 비슷한 취향의 고객 */}
       <section className="mt-6">

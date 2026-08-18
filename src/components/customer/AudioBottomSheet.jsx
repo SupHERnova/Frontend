@@ -8,6 +8,7 @@ function formatTime(sec) {
 
 function AudioBottomSheet({ audioUrl, scriptText, customerName, duration, onClose }) {
   const audioRef = useRef(null);
+  const utteranceRef = useRef(null);
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [totalDuration, setTotalDuration] = useState(duration ?? 0);
@@ -23,16 +24,25 @@ function AudioBottomSheet({ audioUrl, scriptText, customerName, duration, onClos
     }
 
     if (!scriptText) return;
-    window.speechSynthesis.cancel();
+
     const utterance = new SpeechSynthesisUtterance(scriptText);
     utterance.lang = "ko-KR";
     utterance.rate = 0.9;
-    utterance.onstart = () => setPlaying(true);
     utterance.onend = () => setPlaying(false);
-    utterance.onpause = () => setPlaying(false);
-    utterance.onresume = () => setPlaying(true);
-    window.speechSynthesis.speak(utterance);
-    return () => { window.speechSynthesis.cancel(); };
+    utterance.onerror = () => setPlaying(false);
+    utteranceRef.current = utterance;
+
+    // Chrome 버그: cancel() 직후 speak()하면 무시되므로 100ms 지연
+    window.speechSynthesis.cancel();
+    const timer = setTimeout(() => {
+      window.speechSynthesis.speak(utterance);
+      setPlaying(true);
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      window.speechSynthesis.cancel();
+    };
   }, []);
 
   function handleToggle() {
