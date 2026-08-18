@@ -263,7 +263,13 @@ export default function BriefingDetailPage() {
         >
           ▶ 브리핑 듣기
         </button>
-        <button className="w-[202px] h-[52px bg-black text-white text-[15px] py-4 rounded-[15px]">응대 시작하기</button>
+        <button
+          type="button"
+          className="w-[202px] h-[52px] bg-black text-white text-[15px] py-4 rounded-[15px]"
+          onClick={() => navigate(`/record/${customerId}`)}
+        >
+          응대 시작하기
+        </button>
       </div>
 
       {activeBriefing && (
