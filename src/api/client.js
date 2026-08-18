@@ -33,6 +33,13 @@ export function fetchCustomerBriefings(customerId) {
   return request(`/customers/${customerId}/briefings`);
 }
 
+export function createBriefing({ customerId, summaryText, scriptText }) {
+  return request(`/briefings`, {
+    method: "POST",
+    body: JSON.stringify({ customerId, summaryText, scriptText, ttsAudioUrl: "", ttsDuration: 0, status: "SUCCESS" }),
+  });
+}
+
 export function fetchRecommendation(customerId) {
   return request(`/customers/${customerId}/recommendations`);
 }

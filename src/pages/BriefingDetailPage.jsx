@@ -280,6 +280,7 @@ export default function BriefingDetailPage() {
       {activeBriefing && (
         <AudioBottomSheet
           audioUrl={activeBriefing.ttsAudioUrl}
+          scriptText={activeBriefing.scriptText}
           customerName={customerName}
           duration={activeBriefing.ttsDuration}
           onClose={() => setActiveBriefing(null)}
