@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import CustomersPage from "./pages/CustomersPage.jsx";
-import CustomerBriefingPage from "./pages/CustomerBriefingPage.jsx";
+import CustomerProfilePage from "./pages/CustomerProfilePage.jsx";
 import BriefingDetailPage from "./pages/BriefingDetailPage.jsx";
 import BriefingPage from "./pages/BriefingPage.jsx";
 import Recommend from "./pages/RecommendPage.jsx";
@@ -17,13 +17,13 @@ function App() {
 
           <Route path="/customers" element={<CustomersPage />} />
           <Route path="/customers/all" element={<CustomersPage />} />
-          <Route path="/customers/:customerId" element={<CustomerBriefingPage />} />
+          <Route path="/customers/:customerId" element={<CustomerProfilePage />} />
           <Route path="/customers/:customerId/briefing" element={<BriefingDetailPage />} />
           
           <Route path="/briefing" element={<BriefingPage />} />
 
           {/* 추천 페이지: 목록 / 상세(고객 선택 후) */}
-          <Route path="/" element={<Navigate to="/recommend" replace />} />
+          <Route path="/" element={<Navigate to="/customers" replace />} />
           <Route path="/recommend" element={<Recommend />} />
           <Route path="/recommend/:customerId" element={<Recommend />} />
 

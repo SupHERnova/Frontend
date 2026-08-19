@@ -47,7 +47,7 @@ function useCustomerDetail(customerId) {
   return state;
 }
 
-export default function CustomerBriefingPage() {
+export default function CustomerProfilePage() {
   const { customerId } = useParams();
   const navigate = useNavigate();
   const { loading, error, customer } = useCustomerDetail(customerId);
