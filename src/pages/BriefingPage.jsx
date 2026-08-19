@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import CustomerCard from "../components/common/CustomerCard";
 import searchIcon from "../assets/search.svg";
 import { useCustomerList } from "../hooks/useCustomerList";
-import { BADGE_LABEL } from "../data/constants";
 
 export default function BriefingPage() {
   const navigate = useNavigate();
@@ -51,7 +50,7 @@ export default function BriefingPage() {
           <CustomerCard
             key={customer.id}
             customer={customer}
-            badgeLabel={BADGE_LABEL[customer.recommendationType]}
+            badgeLabel={customer.grade}
             onClick={() => navigate(`/customers/${customer.id}/briefing`)}
           />
         ))}

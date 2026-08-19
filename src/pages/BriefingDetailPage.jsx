@@ -5,7 +5,7 @@ import backIcon from "../assets/backIcon.svg";
 import ProductCard from "../components/recommend/ProductCard";
 import RecommendationMessage from "../components/recommend/RecommendationMessage";
 import AudioBottomSheet from "../components/customer/AudioBottomSheet";
-import { fetchCustomerDetail, fetchRecommendation, fetchCustomerBriefings, fetchBriefingContext } from "../api/client";
+import { fetchRecommendation, fetchBriefingContext, fetchBriefingById } from "../api/client";
 
 function useBriefingDetail(customerId) {
   const [state, setState] = useState({
@@ -13,7 +13,7 @@ function useBriefingDetail(customerId) {
     error: null,
     customerName: "",
     recommendation: null,
-    briefings: [],
+    briefingId: null,
     context: null,
   });
 
@@ -22,10 +22,8 @@ function useBriefingDetail(customerId) {
 
     async function load() {
       try {
-        const [customer, recommendation, briefings, context] = await Promise.all([
-          fetchCustomerDetail(customerId),
+        const [recommendation, context] = await Promise.all([
           fetchRecommendation(customerId).catch(() => null),
-          fetchCustomerBriefings(customerId).catch(() => []),
           fetchBriefingContext(customerId).catch(() => null),
         ]);
 
@@ -33,15 +31,15 @@ function useBriefingDetail(customerId) {
           setState({
             loading: false,
             error: null,
-            customerName: customer.customerName,
+            customerName: context?.customerName ?? "",
             recommendation,
-            briefings: Array.isArray(briefings) ? briefings : [],
+            briefingId: context?.briefingId ?? null,
             context,
           });
         }
       } catch (err) {
         if (!cancelled)
-          setState({ loading: false, error: err.message, customerName: "", recommendation: null, briefings: [], context: null });
+          setState({ loading: false, error: err.message, customerName: "", recommendation: null, briefingId: null, context: null });
       }
     }
 
@@ -55,8 +53,14 @@ function useBriefingDetail(customerId) {
 export default function BriefingDetailPage() {
   const { customerId } = useParams();
   const navigate = useNavigate();
-  const { loading, error, customerName, recommendation, briefings, context } = useBriefingDetail(customerId);
+  const { loading, error, customerName, recommendation, briefingId, context } = useBriefingDetail(customerId);
   const [activeBriefing, setActiveBriefing] = useState(null);
+
+  async function handlePlayBriefing() {
+    if (!briefingId) return;
+    const briefing = await fetchBriefingById(briefingId).catch(() => null);
+    if (briefing) setActiveBriefing(briefing);
+  }
 
   if (loading || error) {
     return (
@@ -240,7 +244,7 @@ export default function BriefingDetailPage() {
         <button
           type="button"
           className="w-[143px] h-[52px] text-[15px] border border-gray-200 rounded-[15px]"
-          onClick={() => briefings[0] && setActiveBriefing(briefings[0])}
+          onClick={handlePlayBriefing}
         >
           ▶ 브리핑 듣기
         </button>
