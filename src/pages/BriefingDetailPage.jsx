@@ -159,7 +159,7 @@ export default function BriefingDetailPage() {
       {/* 선호 취향 */}
       <section className="mt-6">
         <p className="mb-3 text-[20px] font-bold text-ink">선호 취향</p>
-        <div className="rounded-2xl border border-line bg-white">
+        <div className="rounded-2xl border border-line bg-white overflow-hidden">
           <div className="grid grid-cols-2 divide-x divide-y divide-line">
             {preferences.map(({ label, value }) => (
               <div key={label} className="px-5 py-4">
