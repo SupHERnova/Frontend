@@ -200,7 +200,7 @@ export default function BriefingDetailPage() {
       {/* 비슷한 취향의 고객 */}
       <section className="mt-6">
         {hasSimilarStats ? (
-          <div className="rounded-2xl border-2 border-accent px-5 py-5">
+          <div className="rounded-2xl border border-gray-200 px-5 py-5">
             <p className="text-[16px] font-bold leading-snug text-ink">
               비슷한 취향의 고객은
               <br />
@@ -212,17 +212,15 @@ export default function BriefingDetailPage() {
             </p>
             <div className="mt-4 flex flex-col gap-3">
               {similarCustomerStats.ratios.map((item, index) => (
-                <div key={item.productName}>
-                  <div className="mb-1.5 flex items-center justify-between text-[13px]">
-                    <span className="text-ink">{item.productName}</span>
-                    <span className="font-semibold text-ink">{item.ratio}%</span>
-                  </div>
-                  <div className="h-2 w-full rounded-full bg-line">
+                <div key={item.productName} className="flex items-center gap-2 text-[13px]">
+                  <span className="w-24 shrink-0 truncate text-ink">{item.productName}</span>
+                  <div className="h-2 flex-1 rounded-full bg-line">
                     <div
                       className={`h-full rounded-full ${index === 0 ? "bg-accent" : "bg-accent/40"}`}
                       style={{ width: `${item.ratio}%` }}
                     />
                   </div>
+                  <span className="w-8 shrink-0 text-right font-semibold text-ink">{item.ratio}%</span>
                 </div>
               ))}
             </div>
