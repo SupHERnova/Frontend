@@ -1,6 +1,6 @@
 function ProfileCard({ customer, badgeLabel }) {
   return (
-    <div className="w-full h-[116px] flex items-center gap-4 rounded-[15px] border border-line bg-white px-4 py-4">
+    <div className="w-full h-[116px] flex items-center gap-4 rounded-[15px] border border-[#C3E6FF] bg-[#F9FDFF] px-4 py-4">
       <span className="h-14 w-14 shrink-0 rounded-full bg-line" />
 
       <div className="min-w-0 flex-1">
