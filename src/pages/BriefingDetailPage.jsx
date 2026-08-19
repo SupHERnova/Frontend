@@ -142,7 +142,7 @@ export default function BriefingDetailPage() {
             {matchedProducts.map((product) => (
               <ProductCard
                 key={product.productId}
-                product={{ name: product.productName, price: product.price, matchRate: product.matchRate }}
+                product={{ name: product.productName, price: product.price, matchRate: product.matchRate, imageUrl: product.imageUrl }}
               />
             ))}
           </div>
