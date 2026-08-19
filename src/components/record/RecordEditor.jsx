@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import VoiceModal from "./VoiceModal";
-import { createRecord } from "../../api/client";
+import { generateBriefing } from "../../api/client";
 
 const MAX_LENGTH = 500;
 
@@ -26,10 +26,10 @@ function RecordEditor({ customerId, onSaved }) {
     setSaving(true);
     setSaveError(null);
     try {
-      await createRecord(customerId, content);
+      await generateBriefing(customerId, content);
       setShowSavedDialog(true);
     } catch (err) {
-      setSaveError(err.message);
+      setSaveError(err.message ?? "저장에 실패했어요. 다시 시도해주세요.");
     } finally {
       setSaving(false);
     }
@@ -66,7 +66,9 @@ function RecordEditor({ customerId, onSaved }) {
       </p>
 
       {saveError && (
-        <p className="mt-2 text-[12px] text-red-500">{saveError}</p>
+        <div className="mt-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3">
+          <p className="text-[13px] text-red-600">{saveError}</p>
+        </div>
       )}
 
       <div className="mt-6 flex gap-2">
@@ -95,7 +97,7 @@ function RecordEditor({ customerId, onSaved }) {
       )}
 
       {showSavedDialog && (
-        <div className="absolute inset-0 z-[70] flex items-center justify-center bg-black/40">
+        <div className="absolute inset-0 z-70 flex items-center justify-center bg-black/40">
           <div className="mx-10 rounded-2xl bg-white px-6 py-6 text-center">
             <p className="text-[14px] font-medium text-ink">
               성공적으로 저장되었습니다

@@ -13,6 +13,10 @@ export default defineConfig({
         target: "http://34.64.181.69",
         changeOrigin: true,
       },
+      "/files": {
+        target: "http://34.64.181.69",
+        changeOrigin: true,
+      },
     },
   },
 })

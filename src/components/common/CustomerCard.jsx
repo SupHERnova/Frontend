@@ -7,6 +7,7 @@ function CustomerCard({ customer, badgeLabel, selected, onClick }) {
         flex w-full appearance-none items-center gap-3
         rounded-[15px] border bg-white px-4 py-4
         text-left transition-colors
+        hover:border-[1.5px] hover:border-accent-soft hover:bg-surface
         active:bg-line/40
         ${selected ? "border-accent-soft" : "border-line"}
       `}

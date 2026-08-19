@@ -29,13 +29,25 @@ export function fetchCustomerDetail(customerId) {
   return request(`/customers/${customerId}`);
 }
 
-export function fetchRecommendation(customerId) {
-  return request(`/customers/${customerId}/recommendations`);
+export function fetchCustomerBriefings(customerId) {
+  return request(`/customers/${customerId}/briefings`);
 }
 
-export function createRecord(customerId, rawNote) {
-  return request(`/customers/${customerId}/records`, {
+export function fetchBriefingContext(customerId) {
+  return request(`/customers/${customerId}/briefings/context`);
+}
+
+export function generateBriefing(customerId, transcribedText) {
+  return request(`/customers/${customerId}/briefings/generate`, {
     method: "POST",
-    body: JSON.stringify({ rawNote }),
+    body: JSON.stringify({ transcribedText }),
   });
+}
+
+export function fetchBriefingById(briefingId) {
+  return request(`/briefings/${briefingId}`);
+}
+
+export function fetchRecommendation(customerId) {
+  return request(`/customers/${customerId}/recommendations`);
 }
