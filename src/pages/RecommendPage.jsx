@@ -205,6 +205,7 @@ function RecommendDetailView({ customerId }) {
                   name: product.productName,
                   price: product.price,
                   matchRate: product.matchRate,
+                  imageUrl: product.imageUrl,
                 }}
               />
             ))}
