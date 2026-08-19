@@ -22,7 +22,7 @@ function mapCustomer(raw) {
     saName: raw.saName ?? "-",
     preferredContactMethod: raw.preferredContactMethod ?? "-",
     recommendationType: raw.recommendationType,
-    styleTags: raw.keywords ?? [],
+    styleTags: [...new Set(raw.keywords ?? [])],
   };
 }
 
