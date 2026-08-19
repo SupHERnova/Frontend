@@ -6,13 +6,13 @@ import ProfileCard from "../components/customer/ProfileCard";
 import StatCard from "../components/customer/StatCard";
 import { fetchCustomerDetail } from "../api/client";
 import { daysAgo } from "../utils/date";
-import { BADGE_LABEL } from "../data/constants";
 
 function mapCustomer(raw) {
   return {
     id: raw.customerId,
     name: raw.customerName,
     crmId: raw.crmId ?? "-",
+    grade: raw.grade ?? "-",
     gender: raw.gender,
     age: raw.age,
     lastVisitDays: daysAgo(raw.lastVisitAt),
@@ -92,7 +92,7 @@ export default function CustomerBriefingPage() {
       <div className="mt-[13px] mb-5">
         <ProfileCard
           customer={customer}
-          badgeLabel={BADGE_LABEL[customer.recommendationType]}
+          badgeLabel={customer.grade}
         />
       </div>
       <div className="flex gap-2 mb-7">

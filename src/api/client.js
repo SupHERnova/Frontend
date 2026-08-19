@@ -51,10 +51,3 @@ export function fetchBriefingById(briefingId) {
 export function fetchRecommendation(customerId) {
   return request(`/customers/${customerId}/recommendations`);
 }
-
-export function createRecord(customerId, rawNote) {
-  return request(`/customers/${customerId}/records`, {
-    method: "POST",
-    body: JSON.stringify({ rawNote }),
-  });
-}

@@ -16,7 +16,7 @@ function mapCustomer(raw) {
   };
 }
 
-export function useCustomerList(search) {
+export function useCustomerList(search, size = 20) {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -27,7 +27,7 @@ export function useCustomerList(search) {
       setLoading(true);
       setError(null);
 
-      fetchCustomers({ search })
+      fetchCustomers({ search, size })
         .then((result) => {
           if (cancelled) return;
           setCustomers(result.content.map(mapCustomer));
