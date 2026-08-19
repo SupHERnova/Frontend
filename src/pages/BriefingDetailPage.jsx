@@ -5,7 +5,7 @@ import backIcon from "../assets/backIcon.svg";
 import ProductCard from "../components/recommend/ProductCard";
 import RecommendationMessage from "../components/recommend/RecommendationMessage";
 import AudioBottomSheet from "../components/customer/AudioBottomSheet";
-import { fetchCustomerDetail, fetchRecommendation, fetchCustomerBriefings } from "../api/client";
+import { fetchCustomerDetail, fetchRecommendation, fetchBriefingContext, fetchBriefingById } from "../api/client";
 import { BADGE_LABEL } from "../data/constants";
 
 function BriefingItem({ briefing: b, onPlay }) {
@@ -44,27 +44,35 @@ function useBriefingDetail(customerId) {
   useEffect(() => {
     let cancelled = false;
 
-    Promise.all([
-      fetchCustomerDetail(customerId),
-      fetchRecommendation(customerId).catch(() => null),
-      fetchCustomerBriefings(customerId).catch(() => []),
-    ])
-      .then(([customer, recommendation, briefingsRaw]) => {
-        if (!cancelled)
+    async function load() {
+      try {
+        const [customer, recommendation, context] = await Promise.all([
+          fetchCustomerDetail(customerId),
+          fetchRecommendation(customerId).catch(() => null),
+          fetchBriefingContext(customerId).catch(() => null),
+        ]);
+
+        const briefing = context?.briefingId
+          ? await fetchBriefingById(context.briefingId).catch(() => null)
+          : null;
+
+        if (!cancelled) {
           setState({
             loading: false,
             error: null,
             customerName: customer.customerName,
             customer,
             recommendation,
-            briefings: Array.isArray(briefingsRaw) ? briefingsRaw : (briefingsRaw?.content ?? []),
+            briefings: briefing ? [briefing] : [],
           });
-      })
-      .catch((err) => {
+        }
+      } catch (err) {
         if (!cancelled)
           setState({ loading: false, error: err.message, customerName: "", customer: null, recommendation: null, briefings: [] });
-      });
+      }
+    }
 
+    load();
     return () => { cancelled = true; };
   }, [customerId]);
 

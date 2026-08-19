@@ -33,11 +33,19 @@ export function fetchCustomerBriefings(customerId) {
   return request(`/customers/${customerId}/briefings`);
 }
 
-export function createBriefing({ customerId, summaryText, scriptText }) {
-  return request(`/briefings`, {
+export function fetchBriefingContext(customerId) {
+  return request(`/customers/${customerId}/briefings/context`);
+}
+
+export function generateBriefing(customerId, transcribedText) {
+  return request(`/customers/${customerId}/briefings/generate`, {
     method: "POST",
-    body: JSON.stringify({ customerId, summaryText, scriptText, ttsAudioUrl: "", ttsDuration: 0, status: "SUCCESS" }),
+    body: JSON.stringify({ transcribedText }),
   });
+}
+
+export function fetchBriefingById(briefingId) {
+  return request(`/briefings/${briefingId}`);
 }
 
 export function fetchRecommendation(customerId) {

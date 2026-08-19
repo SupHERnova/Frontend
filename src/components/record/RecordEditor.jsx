@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import VoiceModal from "./VoiceModal";
-import { createRecord, createBriefing } from "../../api/client";
+import { generateBriefing } from "../../api/client";
 
 const MAX_LENGTH = 500;
 
@@ -26,12 +26,7 @@ function RecordEditor({ customerId, onSaved }) {
     setSaving(true);
     setSaveError(null);
     try {
-      const record = await createRecord(customerId, content);
-      await createBriefing({
-        customerId: Number(customerId),
-        summaryText: record?.aiSummary || content.slice(0, 100),
-        scriptText: content,
-      });
+      await generateBriefing(customerId, content);
       setShowSavedDialog(true);
     } catch (err) {
       setSaveError(err.message ?? "저장에 실패했어요. 다시 시도해주세요.");
