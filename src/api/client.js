@@ -1,7 +1,3 @@
-// 백엔드 스웨거: http://34.64.181.69/swagger-ui/index.html
-// 개발 중엔 CORS 우회를 위해 vite.config.js의 /api 프록시를 거쳐 요청한다.
-
-// TODO: 매장별로 로그인/컨텍스트가 생기면 하드코딩을 제거한다.
 export const STORE_ID = 101;
 
 async function request(path, options) {
