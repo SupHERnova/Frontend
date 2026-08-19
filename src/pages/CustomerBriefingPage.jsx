@@ -19,8 +19,8 @@ function mapCustomer(raw) {
     totalPurchaseCount: raw.totalPurchaseCount ?? "-",
     totalPurchaseAmount: raw.totalPurchaseAmount ?? "-",
     phone: raw.phone ?? "-",
-    assignedSa: raw.assignedSa ?? "-",
-    preferredContact: raw.preferredContact ?? "-",
+    saName: raw.saName ?? "-",
+    preferredContactMethod: raw.preferredContactMethod ?? "-",
     recommendationType: raw.recommendationType,
     styleTags: raw.keywords ?? [],
   };
@@ -107,8 +107,8 @@ export default function CustomerBriefingPage() {
       <div className="w-full rounded-[15px] border border-line bg-white px-[27px] py-8 flex flex-col gap-4 mb-[23px]">
         {[
           { label: "연락처", value: customer.phone },
-          { label: "담당 SA", value: customer.assignedSa },
-          { label: "선호 연락", value: customer.preferredContact },
+          { label: "담당 SA", value: customer.saName},
+          { label: "선호 연락", value: customer.preferredContactMethod },
         ].map(({ label, value }) => (
           <div key={label} className="flex justify-between">
             <p className="text-[14px] text-muted">{label}</p>
