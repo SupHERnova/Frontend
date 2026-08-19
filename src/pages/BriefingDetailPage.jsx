@@ -5,40 +5,16 @@ import backIcon from "../assets/backIcon.svg";
 import ProductCard from "../components/recommend/ProductCard";
 import RecommendationMessage from "../components/recommend/RecommendationMessage";
 import AudioBottomSheet from "../components/customer/AudioBottomSheet";
-import { fetchCustomerDetail, fetchRecommendation, fetchBriefingContext, fetchBriefingById } from "../api/client";
-import { BADGE_LABEL } from "../data/constants";
-
-function BriefingItem({ briefing: b, onPlay }) {
-  return (
-    <li className="rounded-2xl border border-line bg-white px-5 py-4">
-      <p className="text-[11px] text-muted">
-        {new Date(b.createdAt).toLocaleDateString("ko-KR")}
-      </p>
-      {b.summaryText && (
-        <p className="mt-1 text-[14px] font-semibold text-ink">{b.summaryText}</p>
-      )}
-      {b.scriptText && (
-        <p className="mt-1 text-[12px] text-muted line-clamp-2">{b.scriptText}</p>
-      )}
-      <button
-        type="button"
-        onClick={() => onPlay(b)}
-        className="mt-3 w-full rounded-xl border border-ink py-2.5 text-[13px] font-semibold text-ink"
-      >
-        음성 듣기
-      </button>
-    </li>
-  );
-}
+import { fetchCustomerDetail, fetchRecommendation, fetchCustomerBriefings, fetchBriefingContext } from "../api/client";
 
 function useBriefingDetail(customerId) {
   const [state, setState] = useState({
     loading: true,
     error: null,
     customerName: "",
-    customer: null,
     recommendation: null,
     briefings: [],
+    context: null,
   });
 
   useEffect(() => {
@@ -46,29 +22,26 @@ function useBriefingDetail(customerId) {
 
     async function load() {
       try {
-        const [customer, recommendation, context] = await Promise.all([
+        const [customer, recommendation, briefings, context] = await Promise.all([
           fetchCustomerDetail(customerId),
           fetchRecommendation(customerId).catch(() => null),
+          fetchCustomerBriefings(customerId).catch(() => []),
           fetchBriefingContext(customerId).catch(() => null),
         ]);
-
-        const briefing = context?.briefingId
-          ? await fetchBriefingById(context.briefingId).catch(() => null)
-          : null;
 
         if (!cancelled) {
           setState({
             loading: false,
             error: null,
             customerName: customer.customerName,
-            customer,
             recommendation,
-            briefings: briefing ? [briefing] : [],
+            briefings: Array.isArray(briefings) ? briefings : [],
+            context,
           });
         }
       } catch (err) {
         if (!cancelled)
-          setState({ loading: false, error: err.message, customerName: "", customer: null, recommendation: null, briefings: [] });
+          setState({ loading: false, error: err.message, customerName: "", recommendation: null, briefings: [], context: null });
       }
     }
 
@@ -82,7 +55,7 @@ function useBriefingDetail(customerId) {
 export default function BriefingDetailPage() {
   const { customerId } = useParams();
   const navigate = useNavigate();
-  const { loading, error, customerName, customer, recommendation, briefings } = useBriefingDetail(customerId);
+  const { loading, error, customerName, recommendation, briefings, context } = useBriefingDetail(customerId);
   const [activeBriefing, setActiveBriefing] = useState(null);
 
   if (loading || error) {
@@ -98,21 +71,19 @@ export default function BriefingDetailPage() {
     );
   }
 
-  const { restockedProduct, matchedProducts, similarCustomerStats, recommendationComment } = recommendation;
+  const { restockedProduct, matchedProducts, recommendationComment } = recommendation ?? {};
 
   const isRestock = Boolean(restockedProduct);
   const topMatch = matchedProducts?.[0];
 
   const pitch = isRestock
     ? {
-        label: BADGE_LABEL.RESTOCK,
         topNote: restockedProduct.matchReason,
         productName: `${restockedProduct.productName} · ${restockedProduct.size}`,
         bottomNote: `재입고 ${restockedProduct.restockedCount}개`,
       }
     : topMatch
       ? {
-          label: BADGE_LABEL.HIGH_MATCH,
           topNote: "취향 매칭 상품",
           productName: topMatch.productName,
           bottomNote: `매치율 ${topMatch.matchRate}%`,
@@ -120,16 +91,16 @@ export default function BriefingDetailPage() {
       : null;
 
   const hasProducts = (matchedProducts?.length ?? 0) > 0;
-  const hasSimilarStats = Boolean(similarCustomerStats?.ratios?.length);
+
+  const { preferredKeywords, recentPurchases = [], similarCustomerStats } = context ?? {};
+  const hasSimilarStats = similarCustomerStats?.isAvailable && (similarCustomerStats?.ratios?.length ?? 0) > 0;
 
   const preferences = [
-    { label: "브랜드", value: customer.preferredBrands ?? "-" },
-    { label: "컬러", value: customer.preferredColors ?? "-" },
-    { label: "소재", value: customer.preferredMaterials ?? "-" },
-    { label: "무드", value: customer.preferredMoods ?? "-" },
+    { label: "브랜드", value: preferredKeywords?.brand ?? "-" },
+    { label: "컬러", value: preferredKeywords?.color ?? "-" },
+    { label: "소재", value: preferredKeywords?.material ?? "-" },
+    { label: "무드", value: preferredKeywords?.mood ?? "-" },
   ];
-
-  const recentPurchases = customer.recentPurchases ?? [];
 
   return (
     <div className="px-5 pb-[110px] pt-8">
@@ -204,11 +175,11 @@ export default function BriefingDetailPage() {
             <p className="py-4 text-center text-[13px] text-muted">구매 이력이 없어요</p>
           ) : (
             <ul className="flex flex-col gap-4">
-              {recentPurchases.map((item, index) => (
-                <li key={index} className="flex gap-3">
+              {recentPurchases.map((item) => (
+                <li key={item.orderId} className="flex gap-3">
                   <span className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-ink" />
                   <div>
-                    <p className="text-[11px] text-muted">{item.date}</p>
+                    <p className="text-[11px] text-muted">{item.purchasedAt}</p>
                     <p className="mt-0.5 text-[14px] font-semibold text-ink">{item.productName}</p>
                     <p className="mt-0.5 text-[12px] text-muted">
                       {item.color} · ₩{Number(item.price).toLocaleString()}
@@ -231,15 +202,15 @@ export default function BriefingDetailPage() {
               <br />
               최근{" "}
               <span className="text-accent">
-                &lsquo;{similarCustomerStats.topCategoryName}&rsquo;
+                &lsquo;{similarCustomerStats.topProductName}&rsquo;
               </span>
               를 많이 찾았어요.
             </p>
             <div className="mt-4 flex flex-col gap-3">
               {similarCustomerStats.ratios.map((item, index) => (
-                <div key={item.categoryName}>
+                <div key={item.productName}>
                   <div className="mb-1.5 flex items-center justify-between text-[13px]">
-                    <span className="text-ink">{item.categoryName}</span>
+                    <span className="text-ink">{item.productName}</span>
                     <span className="font-semibold text-ink">{item.ratio}%</span>
                   </div>
                   <div className="h-2 w-full rounded-full bg-line">
@@ -258,7 +229,9 @@ export default function BriefingDetailPage() {
         ) : (
           <div className="rounded-2xl border border-line px-4 py-6 text-center">
             <p className="text-[13px] font-medium text-ink">비슷한 고객 데이터가 아직 부족해요</p>
-            <p className="mt-1 text-[12px] text-muted">유사 고객의 데이터가 5건 이상 필요합니다.</p>
+            <p className="mt-1 text-[12px] text-muted">
+              {similarCustomerStats?.reasonMessage ?? "유사 고객의 데이터가 5건 이상 필요합니다."}
+            </p>
           </div>
         )}
       </section>
