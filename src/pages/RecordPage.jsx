@@ -22,7 +22,7 @@ function RecordListView() {
   return (
     <div className="px-5 pb-[110px] pt-8">
       <img src={logoSrc} alt="logo" className="mb-2.5" />
-      <h1 className="text-center text-[16px] text-ink">기록</h1>
+      <h1 className="text-center text-[18px] font-bold text-ink">기록</h1>
 
       <div className="mt-6 flex items-center gap-2 rounded-[15px] border border-line px-4 py-3">
         <input

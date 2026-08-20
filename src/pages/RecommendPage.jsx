@@ -24,7 +24,7 @@ function RecommendListView() {
   return (
     <div className="px-5 pb-[110px] pt-8">
       <img src={logoSrc} alt="logo" className="mb-2.5" />
-      <h1 className="text-center text-[16px] text-ink">추천</h1>
+      <h1 className="text-center text-[18px] font-bold text-ink">추천</h1>
 
       <section className="mt-6 rounded-[15px] border border-accent-soft bg-surface p-5">
         <p className="text-[30px] font-bold leading-[1.3] text-ink">
