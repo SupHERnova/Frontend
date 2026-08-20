@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import CustomerCard from "../components/common/CustomerCard";
 import BackButton from "../components/common/BackButton";
 import searchIcon from "../assets/search.svg";
+import logoSrc from "../assets/logo.svg";
 import { useCustomerList } from "../hooks/useCustomerList";
 
 function SearchInput({ value, onChange }) {
@@ -46,7 +47,7 @@ function CustomersMainView() {
 
   return (
     <div className="px-5 pb-[110px] pt-8">
-      <p className="mb-[10px] text-gray-200">LOGO</p>
+      <img src={logoSrc} alt="logo" className="mb-[10px]" />
       <h1 className="text-left text-[30px] font-bold text-ink">
         오늘의 고객을
         <br /> 준비해볼까요?

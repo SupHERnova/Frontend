@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import CustomerCard from "../components/common/CustomerCard";
 import searchIcon from "../assets/search.svg";
+import logoSrc from "../assets/logo.svg";
 import { useCustomerList } from "../hooks/useCustomerList";
 
 export default function BriefingPage() {
@@ -12,6 +13,7 @@ export default function BriefingPage() {
 
   return (
     <div className="px-5 pb-[110px] pt-8">
+      <img src={logoSrc} alt="logo" className="mb-2.5" />
       <p className="text-center text-[18px] font-bold text-ink">브리핑</p>
 
       <div className="relative mt-5 mb-9">
