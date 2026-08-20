@@ -8,6 +8,7 @@ import RecommendationMessage from "../components/recommend/RecommendationMessage
 import { fetchCustomerDetail, fetchRecommendation } from "../api/client";
 import { BADGE_LABEL } from "../data/constants";
 import { useCustomerList } from "../hooks/useCustomerList";
+import logoSrc from "../assets/logo.svg";
 
 function RecommendListView() {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ function RecommendListView() {
 
   return (
     <div className="px-5 pb-[110px] pt-8">
+      <img src={logoSrc} alt="logo" className="mb-2.5" />
       <h1 className="text-center text-[16px] text-ink">추천</h1>
 
       <section className="mt-6 rounded-[15px] border border-accent-soft bg-surface p-5">

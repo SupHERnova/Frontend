@@ -5,6 +5,7 @@ import BackButton from "../components/common/BackButton";
 import CustomerCard from "../components/common/CustomerCard";
 import RecordEditor from "../components/record/RecordEditor";
 import searchIcon from "../assets/search.svg";
+import logoSrc from "../assets/logo.svg";
 import { fetchCustomerDetail } from "../api/client";
 import { useCustomerList } from "../hooks/useCustomerList";
 
@@ -20,6 +21,7 @@ function RecordListView() {
 
   return (
     <div className="px-5 pb-[110px] pt-8">
+      <img src={logoSrc} alt="logo" className="mb-2.5" />
       <h1 className="text-center text-[16px] text-ink">기록</h1>
 
       <div className="mt-6 flex items-center gap-2 rounded-[15px] border border-line px-4 py-3">
