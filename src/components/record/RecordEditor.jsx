@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import VoiceModal from "./VoiceModal";
-import { generateBriefing } from "../../api/client";
+import { createRecord, generateBriefing } from "../../api/client";
 
 const MAX_LENGTH = 500;
 
@@ -26,6 +26,7 @@ function RecordEditor({ customerId, onSaved }) {
     setSaving(true);
     setSaveError(null);
     try {
+      await createRecord(customerId, content);
       await generateBriefing(customerId, content);
       setShowSavedDialog(true);
     } catch (err) {
