@@ -12,8 +12,6 @@ function CustomerCard({ customer, badgeLabel, selected, onClick }) {
         ${selected ? "border-accent-soft" : "border-line"}
       `}
     >
-      <span className="h-12 w-12 shrink-0 rounded-full bg-line" />
-
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-2">
           <span className="truncate text-[18px] font-semibold text-ink">
