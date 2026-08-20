@@ -141,7 +141,7 @@ function RecommendDetailView({ customerId }) {
   const pitch = isRestock
     ? {
         label: BADGE_LABEL.RESTOCK,
-        topNote: restockedProduct.matchReason,
+        topNote: restockedProduct.slotReason,
         productName: `${restockedProduct.productName} · ${restockedProduct.size}`,
         bottomNote: `재입고 ${restockedProduct.restockedCount}개`,
       }
@@ -155,7 +155,9 @@ function RecommendDetailView({ customerId }) {
       : null;
 
   const hasProducts = (matchedProducts?.length ?? 0) > 0;
-  const hasSimilarStats = Boolean(similarCustomerStats?.ratios?.length);
+  const hasSimilarStats =
+    Boolean(similarCustomerStats?.isAvailable) &&
+    (similarCustomerStats?.ratios?.length ?? 0) > 0;
 
   return (
     <div className="px-5 pb-[110px] pt-8">
@@ -229,14 +231,14 @@ function RecommendDetailView({ customerId }) {
               비슷한 취향의 고객은
             </p>
             <p className="mb-2 text-[13px] text-muted">
-              최근 &lsquo;{similarCustomerStats.topCategoryName}&rsquo;를 많이
+              최근 &lsquo;{similarCustomerStats.topProductName}&rsquo;를 많이
               찾았어요
             </p>
             <div className="flex flex-col gap-3 rounded-2xl border border-line px-4 py-3">
               {similarCustomerStats.ratios.map((item, index) => (
-                <div key={item.categoryName}>
+                <div key={item.productName}>
                   <div className="mb-1.5 flex items-center justify-between text-[12px]">
-                    <span className="text-ink">{item.categoryName}</span>
+                    <span className="text-ink">{item.productName}</span>
                     <span className="font-semibold text-accent">
                       {item.ratio}%
                     </span>
@@ -263,7 +265,7 @@ function RecommendDetailView({ customerId }) {
                 비슷한 고객 데이터가 아직 부족해요
               </p>
               <p className="mt-1 text-[12px] text-muted">
-                유사 고객의 데이터가 5건 이상 필요합니다.
+                {similarCustomerStats?.reasonMessage ?? "유사 고객의 데이터가 5건 이상 필요합니다."}
               </p>
             </div>
           </>
